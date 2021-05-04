@@ -46,3 +46,13 @@ steps:
   inputs:
     pollingTimeoutSec: '300'
   condition: ne(variables['Build.Reason'], 'PullRequest')
+
+- task: BeanstalkDeployApplication@1
+  inputs:
+    awsCredentials: 'aws-connection'
+    regionName: 'us-east-1'
+    applicationName: 'its-pipeline-demo'
+    environmentName: 'Itspipelinedemo-env'
+    applicationType: 'aspnet'
+    webDeploymentArchive: '$(build.artifactStagingDirectory)\WebApp.zip'
+  condition: ne(variables['Build.Reason'], 'PullRequest')
