@@ -16,6 +16,14 @@ steps:
   inputs:
     restoreSolution: '$(solution)'
 
+- task: SonarQubePrepare@4
+  inputs:
+    SonarQube: 'sonarqube-server'
+    scannerMode: 'MSBuild'
+    projectKey: 'its-pipeline-demo'
+    projectName: 'its-pipeline-demo'
+  condition: ne(variables['Build.Reason'], 'PullRequest')
+
 - task: VSBuild@1
   inputs:
     solution: '$(solution)'
@@ -30,3 +38,11 @@ steps:
     projects: '**/*tests/*.csproj'
     arguments: '--configuration $(buildConfiguration)'
     testRunTitle: 'Unit Testing'
+
+- task: SonarQubeAnalyze@4
+  condition: ne(variables['Build.Reason'], 'PullRequest')
+
+- task: SonarQubePublish@4
+  inputs:
+    pollingTimeoutSec: '300'
+  condition: ne(variables['Build.Reason'], 'PullRequest')
